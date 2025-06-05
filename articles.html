@@ -417,10 +417,10 @@
     'hbusz': { password: '', fullName: 'Hanna Busz' },
   };
 
-  // Check for saved user in localStorage
-  const savedUser  = localStorage.getItem('loggedInUser ');
-  if (savedUser  && certifiedUsers[savedUser ]) {
-    username = savedUser ;
+  // Check for saved user in localStorage (fixed key without trailing space)
+  const savedUser  = localStorage.getItem('loggedInUser');
+  if (savedUser && certifiedUsers[savedUser]) {
+    username = savedUser;
   }
 
   // DOM elements
@@ -486,6 +486,12 @@
     const saved = localStorage.getItem('articles');
     if (saved) {
       articles = JSON.parse(saved);
+      // Fix views property to always be a number
+      articles.forEach(article => {
+        if (typeof article.views !== 'number' || isNaN(article.views)) {
+          article.views = 0;
+        }
+      });
     } else {
       articles = [];
     }
@@ -498,7 +504,7 @@
 
   // Render articles list previews
   function renderArticles() {
-    articlesList .innerHTML = '';
+    articlesList.innerHTML = '';
     if (articles.length === 0) {
       noArticlesMsg.style.display = 'block';
       noArticlesPepe.style.display = 'block';
@@ -529,9 +535,16 @@
       author.className = 'article-author';
       author.textContent = `Autor: ${fullName}`;
 
+      // Views count
+      const viewsCount = document.createElement('div');
+      viewsCount.className = 'article-views';
+      viewsCount.textContent = `Views: ${typeof article.views === 'number' ? article.views : 0}`;
+      viewsCount.style.display = username ? 'block' : 'none'; // only show for logged-in users
+
       div.appendChild(img);
       div.appendChild(title);
       div.appendChild(author);
+      div.appendChild(viewsCount);
 
       if (username === article.username) {
         const removeBtn = document.createElement('button');
@@ -569,7 +582,7 @@
     if (articleDetail.style.display === 'block') {
       articleDetail.style.display = 'none';
       articlesList.parentElement.style.display = 'block';
-      updateUIForUser ();
+      updateUIForUser();
     }
   }
 
@@ -577,6 +590,10 @@
   function openArticleDetail(index) {
     const article = articles[index];
     if (!article) return;
+
+    // Increment views safely
+    article.views = (typeof article.views === 'number' && !isNaN(article.views)) ? article.views + 1 : 1;
+    saveArticles();
 
     const fullName = certifiedUsers[article.username]?.fullName || article.username;
     detailImage.src = article.imageData;
@@ -595,11 +612,11 @@
   closeArticleDetail.addEventListener('click', () => {
     articleDetail.style.display = 'none';
     articlesList.parentElement.style.display = 'block';
-    updateUIForUser ();
+    updateUIForUser();
   });
 
   // Show or hide article posting form depending on login status
-  function updateUIForUser () {
+  function updateUIForUser() {
     if (username) {
       articleFormSection.style.display = 'block';
       btnLogin.style.display = 'none';
@@ -618,7 +635,7 @@
   goHomeBtn.addEventListener('click', () => {
     articleDetail.style.display = 'none';
     articlesList.parentElement.style.display = 'block';
-    updateUIForUser ();
+    updateUIForUser();
   });
 
   // Login modal controls
@@ -634,8 +651,8 @@
 
   btnLogout.addEventListener('click', () => {
     username = null;
-    localStorage.removeItem('loggedInUser ');
-    updateUIForUser ();
+    localStorage.removeItem('loggedInUser');
+    updateUIForUser();
     showPopup('Logged out successfully.', 'success');
   });
 
@@ -654,8 +671,8 @@
 
     if (certifiedUsers[inputUsername] && certifiedUsers[inputUsername].password === password) {
       username = inputUsername;
-      localStorage.setItem('loggedInUser ', username);
-      updateUIForUser ();
+      localStorage.setItem('loggedInUser', username);
+      updateUIForUser();
       loginModal.style.display = 'none';
       loginForm.reset();
       showPopup(`Login successful! Certified user: ${certifiedUsers[inputUsername].fullName}`, 'success');
@@ -687,7 +704,8 @@
         text,
         imageData,
         username,
-        id: Date.now()
+        id: Date.now(),
+        views: 0 // Ensure initial views set to 0
       };
       articles.unshift(newArticle);
       saveArticles();
@@ -701,11 +719,11 @@
   // Initialization
   function init() {
     loadArticles();
-    renderArticles();
-    updateUIForUser ();
+    updateUIForUser();
   }
   window.onload = init;
 
 </script>
 </body>
 </html>
+

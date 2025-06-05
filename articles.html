@@ -1,0 +1,703 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1" />
+<title>Artykuły - Radio Pader</title>
+<style>
+  :root {
+    --primary-color: #0454a4;
+    --bg-color: #121212;
+    --surface-color: #1e1e1e;
+    --text-color: #e0e0e0;
+    --text-muted: #a0a0a0;
+    --button-bg: var(--primary-color);
+    --button-hover-bg: #03396c;
+    --input-bg: #2a2a2a;
+    --input-border: #555;
+    --max-width: 900px;
+    --border-radius: 6px;
+    --font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+  }
+  * {
+    box-sizing: border-box;
+  }
+  body {
+    margin: 0;
+    background-color: var(--bg-color);
+    color: var(--text-color);
+    font-family: var(--font-family);
+    min-height: 100vh;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+  }
+  header {
+    background-color: var(--surface-color);
+    width: 100%;
+    padding: 1rem 1.5rem;
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    border-bottom: 1px solid #222;
+  }
+  .logo-container {
+    display: flex;
+    align-items: center;
+    gap: 0.75rem;
+  }
+  .logo-container img {
+    height: 36px;
+    width: 36px;
+    object-fit: contain;
+  }
+  header h1 {
+    margin: 0;
+    font-weight: 700;
+    color: var(--primary-color);
+    font-size: 1.5rem;
+    user-select: none;
+    cursor: pointer;
+  }
+  nav {
+    display: flex;
+    align-items: center;
+    gap: 1rem;
+  }
+  nav button {
+    background-color: var(--button-bg);
+    border: none;
+    color: white;
+    padding: 0.5rem 1.1rem;
+    border-radius: var(--border-radius);
+    font-weight: 700;
+    cursor: pointer;
+    transition: background-color 0.3s ease;
+  }
+  nav button:hover {
+    background-color: var(--button-hover-bg);
+  }
+  main {
+    flex-grow: 1;
+    width: 100%;
+    max-width: var(--max-width);
+    padding: 2rem 1rem;
+  }
+  h2.section-title {
+    color: var(--primary-color);
+    font-weight: 700;
+    margin-bottom: 1.5rem;
+    text-align: center;
+  }
+  .articles-list {
+    display: grid;
+    grid-template-columns: repeat(auto-fill,minmax(280px,1fr));
+    gap: 1.5rem;
+  }
+  .article-preview {
+    background-color: var(--surface-color);
+    padding: 1rem;
+    border-radius: var(--border-radius);
+    box-shadow: 0 4px 12px rgb(4 84 164 / 0.6);
+    cursor: pointer;
+    display: flex;
+    flex-direction: column;
+    transition: box-shadow 0.3s ease;
+    position: relative;
+  }
+  .article-preview:hover {
+    box-shadow: 0 6px 15px rgb(3 57 108 / 0.8);
+  }
+  .article-img {
+    width: 100%;
+    height: 140px;
+    object-fit: cover;
+    border-radius: var(--border-radius);
+    margin-bottom: 0.75rem;
+    background-color: #222;
+  }
+  .article-title {
+    font-weight: 700;
+    font-size: 1.2rem;
+    margin: 0;
+    margin-bottom: 0.4rem;
+    color: var(--primary-color);
+  }
+  .article-author {
+    font-size: 0.9rem;
+    font-style: italic;
+    color: var(--text-muted);
+    margin-bottom: 0.6rem;
+  }
+  .article-remove-btn {
+    position: absolute;
+    top: 8px;
+    right: 8px;
+    background-color: rgba(255,0,0,0.85);
+    border: none;
+    color: white;
+    padding: 0.25rem 0.5rem;
+    border-radius: 4px;
+    font-size: 0.9rem;
+    font-weight: 700;
+    cursor: pointer;
+    opacity: 0.85;
+    transition: opacity 0.2s ease;
+    z-index: 10;
+  }
+  .article-remove-btn:hover {
+    opacity: 1;
+  }
+  .no-articles-msg {
+    text-align: center;
+    color: var(--text-muted);
+    font-style: italic;
+    margin-top: 3rem;
+  }
+  /* Post article form */
+  .post-article-form {
+    background-color: var(--surface-color);
+    padding: 1.5rem;
+    border-radius: var(--border-radius);
+    box-shadow: 0 4px 12px rgb(4 84 164 / 0.6);
+    margin-bottom: 3rem;
+    max-width: 600px;
+    margin-left: auto;
+    margin-right: auto;
+  }
+  .post-article-form h3 {
+    color: var(--primary-color);
+    margin-top: 0;
+    margin-bottom: 1rem;
+    font-weight: 700;
+    font-size: 1.3rem;
+    text-align: center;
+  }
+  .post-article-form label {
+    display: block;
+    color: var(--text-muted);
+    margin-bottom: 0.3rem;
+    font-weight: 600;
+  }
+  .post-article-form input[type="text"],
+  .post-article-form textarea,
+  .post-article-form input[type="file"] {
+    width: 100%;
+    padding: 0.5rem 0.75rem;
+    margin-bottom: 1rem;
+    border-radius: var(--border-radius);
+    border: 1px solid var(--input-border);
+    background-color: var(--input-bg);
+    color: var(--text-color);
+    font-size: 1rem;
+    font-family: var(--font-family);
+    resize: vertical;
+  }
+  .post-article-form textarea {
+    min-height: 100px;
+  }
+  .post-article-form button {
+    display: block;
+    background-color: var(--button-bg);
+    border: none;
+    color: white;
+    padding: 0.75rem 1.5rem;
+    border-radius: var(--border-radius);
+    font-weight: 700;
+    cursor: pointer;
+    margin: 0 auto;
+    transition: background-color 0.3s ease;
+  }
+  .post-article-form button:hover {
+    background-color: var(--button-hover-bg);
+  }
+
+  /* Article detail page styles */
+  .article-detail {
+    max-width: var(--max-width);
+    margin: 2rem auto;
+    background-color: var(--surface-color);
+    border-radius: var(--border-radius);
+    box-shadow: 0 4px 12px rgb(4 84 164 / 0.6);
+    padding: 2rem;
+  }
+  .article-detail img {
+    max-width: 100%;
+    height: auto;
+    border-radius: var(--border-radius);
+    margin-bottom: 1.5rem;
+  }
+  .article-detail h2 {
+    color: var(--primary-color);
+    margin-top: 0;
+    margin-bottom: 0.3rem;
+  }
+  .article-detail .author {
+    font-style: italic;
+    color: var(--text-muted);
+    margin-bottom: 1.5rem;
+  }
+  .article-detail p {
+    line-height: 1.5;
+    white-space: pre-wrap;
+  }
+
+  /* Login and logout controls */
+  #loginStatus {
+    color: var(--text-muted);
+    font-weight: 600;
+  }
+  #btn-logout {
+    background: none;
+    border: 1px solid var(--button-bg);
+    color: var(--button-bg);
+    padding: 0.3rem 0.7rem;
+    border-radius: var(--border-radius);
+    font-weight: 700;
+    cursor: pointer;
+    margin-left: 1rem;
+    transition: background-color 0.3s ease, color 0.3s ease;
+  }
+  #btn-logout:hover {
+    background-color: var(--button-bg);
+    color: white;
+  }
+
+  /* Responsive */
+  @media (max-width: 480px) {
+    .articles-list {
+      grid-template-columns: 1fr;
+    }
+  }
+  .modal {
+    background-color: var(--surface-color);
+    border-radius: var(--border-radius);
+    padding: 2rem;
+    max-width: 400px;
+    width: 90%;
+    box-shadow: 0 8px 30px rgb(0 0 0 / 0.8);
+    position: relative;
+  }
+ .modal h3 {
+    margin-top: 0;
+    margin-bottom: 1rem;
+    color: var(--primary-color);
+    font-weight: 700;
+    font-size: 1.4rem;
+  }
+    .modal label {
+    display: block;
+    margin-bottom: 0.4rem;
+    font-weight: 600;
+    color: var(--text-muted);
+  }
+  .modal input[type="text"], .modal input[type="password"] {
+    width: 100%;
+    padding: 0.5rem 0.75rem;
+    margin-bottom: 1rem;
+    border-radius: var(--border-radius);
+    border: 1px solid var(--input-border);
+    background-color: var(--input-bg);
+    color: var(--text-color);
+    font-size: 1rem;
+    font-family: var(--font-family);
+  }
+  .modal .modal-actions {
+    display: flex;
+    justify-content: flex-end;
+    gap: 1rem;
+  }
+    .modal .btn-cancel {
+    background: none;
+    border: 1px solid var(--text-muted);
+    color: var(--text-muted);
+    padding: 0.5rem 1rem;
+    border-radius: var(--border-radius);
+    cursor: pointer;
+    font-weight: 600;
+    transition: background-color 0.3s ease, color 0.3s ease;
+  }
+  .modal .btn-cancel:hover {
+    background-color: var(--text-muted);
+    color: var(--surface-color);
+  }
+  .modal .btn-submit {
+    background-color: var(--button-bg);
+    border: none;
+    color: white;
+    padding: 0.6rem 1.3rem;
+    border-radius: var(--border-radius);
+    font-weight: 700;
+    cursor: pointer;
+    transition: background-color 0.3s ease;
+  }
+  .modal .btn-submit:hover {
+    background-color: var(--button-hover-bg);
+  }
+</style>
+</head>
+<body>
+<header>
+  <div class="logo-container" aria-label="Logo" role="banner" style="cursor:pointer;" id="goHomeBtn">
+    <a href="index.html"><img src="images/paderlogo.png" alt="Website Logo" /></a>
+    
+    <h1>Artykuły</h1>
+  </div>
+  <nav aria-label="User  actions">
+    <span id="loginStatus" aria-live="polite"></span>
+    <button id="btn-login" title="Certified User Login">Certified Login</button>
+    <button id="btn-logout" title="Logout" style="display:none;">Logout</button>
+  </nav>
+</header>
+<main>
+  <section id="articleFormSection" style="display:none;">
+    <form id="postArticleForm" class="post-article-form" aria-label="Post a new article form">
+      <h3>Post a new article</h3>
+      <label for="articleTitle">Title</label>
+      <input type="text" id="articleTitle" name="articleTitle" required maxlength="150" autocomplete="off" />
+      <label for="articleImage">Select Image</label>
+      <input type="file" id="articleImage" name="articleImage" accept="image/*" required />
+      <label for="articleText">Article Text</label>
+      <textarea id="articleText" name="articleText" required></textarea>
+      <button type="submit">Publish Article</button>
+    </form>
+  </section>
+
+  <section aria-label="Articles list">
+    <h2 class="section-title">Artykuły</h2>
+    <div class="articles-list" id="articlesList" tabindex="0" aria-live="polite" aria-relevant="additions removals"></div>
+    <p id="noArticlesMsg" class="no-articles-msg" style="display:none;">Nie ma jeszcze żadnych artykułow - sadge.</p>
+    <img id="noArticlesPepe" class="no-articles-msg" style="display:none;" src="images/pepe.png" />
+  </section>
+
+  <section id="articleDetail" class="article-detail" style="display:none;" tabindex="0" aria-label="Article detail view">
+    <button id="closeArticleDetail" style="background:none;border:none;color:var(--primary-color);cursor:pointer;margin-bottom:1rem;font-weight:600;">&larr; Wróć do wszystkich artykułów</button>
+    <img src="" alt="" id="detailImage" />
+    <h2 id="detailTitle"></h2>
+    <div class="author" id="detailAuthor"></div>
+    <p id="detailText"></p>
+  </section>
+</main>
+
+<!-- Login Modal -->
+<div id="loginModal" class="modal-overlay" role="dialog" aria-modal="true" aria-labelledby="loginTitle" aria-describedby="loginDesc" tabindex="-1" style="display:none;">
+  <div class="modal">
+    <h3 id="loginTitle">Certified User Login</h3>
+    <p id="loginDesc" style="color:var(--text-muted);margin-top:0;margin-bottom:1.5rem;">Enter your credentials to access certified user features.</p>
+    <form id="loginForm" autocomplete="off" novalidate>
+      <label for="username">Username</label>
+      <input type="text" id="username" name="username" required autocomplete="off" />
+      <label for="password">Password</label>
+      <input type="password" id="password" name="password" required autocomplete="off" />
+      <div class="modal-actions">
+        <button type="button" class="btn-cancel" id="btnCancelLogin">Cancel</button>
+        <button type="submit" class="btn-submit">Login</button>
+      </div>
+    </form>
+  </div>
+</div>
+
+<!-- Custom Popup for messages -->
+<div id="customPopup" role="alert" aria-live="assertive" aria-atomic="true" class="hidden" style="position:fixed;bottom:1.5rem;left:50%;transform:translateX(-50%) translateY(100%);background-color:var(--surface-color);color:var(--text-color);border:1px solid var(--primary-color);border-radius:6px;box-shadow:0 4px 15px rgb(4 84 164 / 0.7);padding:1rem 1.5rem;min-width:260px;font-weight:600;display:flex;align-items:center;justify-content:space-between;gap:1rem;opacity:0;pointer-events:none;transition:opacity 0.3s ease, transform 0.3s ease;z-index:1500;">
+  <span id="popupMessage"></span>
+  <button class="close-popup" aria-label="Close" style="background:none;border:none;color:var(--text-color);font-size:1.2rem;font-weight:700;cursor:pointer;padding:0;margin:0;line-height:1;user-select:none;transition:color 0.2s ease;">&times;</button>
+</div>
+
+<script>
+  // Variables
+  let username = null;
+  let articles = [];
+  const certifiedUsers = {
+        'mkaliszuk': {password: 'asd', fullName: 'Michał Kaliszuk'},
+        'rchibowski': { password: 'Pierdolec3.141592', fullName: 'Remi Chibowski' },
+        'zdudzinska': { password: 'tetolover', fullName: 'Zuza Dudzińska' },
+        'mpastuszak': { password: 'tetolover13', fullName: 'Misia Pastuszak' },
+        'lchroscik': { password: '', fullName: 'Lena Chrościk' },
+        'mgagos': { password: 'Jaskier2020', fullName: 'Magdalena Gagoś' },
+        'mzielinski': { password: 'Sigmaboi2137', fullName: 'Mateusz Zieliński' },
+        'hbusz': { password: '', fullName: 'Hanna Busz' },
+    };
+
+  // DOM elements
+  const loginModal = document.getElementById('loginModal');
+  const loginForm = document.getElementById('loginForm');
+  const btnLogin = document.getElementById('btn-login');
+  const btnCancelLogin = document.getElementById('btnCancelLogin');
+  const btnLogout = document.getElementById('btn-logout');
+  const loginStatus = document.getElementById('loginStatus');
+  const articleFormSection = document.getElementById('articleFormSection');
+  const postArticleForm = document.getElementById('postArticleForm');
+  const articlesList = document.getElementById('articlesList');
+  const noArticlesMsg = document.getElementById('noArticlesMsg');
+  const noArticlesPepe = document.getElementById('noArticlesPepe');
+  const articleDetail = document.getElementById('articleDetail');
+ const closeArticleDetail = document.getElementById('closeArticleDetail');
+  const detailImage = document.getElementById('detailImage');
+  const detailTitle = document.getElementById('detailTitle');
+  const detailAuthor = document.getElementById('detailAuthor');
+  const detailText = document.getElementById('detailText');
+  const goHomeBtn = document.getElementById('goHomeBtn');
+
+  // Custom popup elements
+  const customPopup = document.getElementById('customPopup');
+  const popupMessage = document.getElementById('popupMessage');
+  const popupCloseBtn = customPopup.querySelector('.close-popup');
+  let popupTimeoutId;
+
+  // Show custom popup message
+  function showPopup(message, type = 'success') {
+    clearTimeout(popupTimeoutId);
+    popupMessage.textContent = message;
+    customPopup.className = 'show';
+    customPopup.setAttribute('aria-live', 'assertive');
+    customPopup.style.opacity = '1';
+    customPopup.style.pointerEvents = 'auto';
+    customPopup.style.transform = 'translateX(-50%) translateY(0)';
+    if(type === 'success'){
+      customPopup.style.borderColor = '#28a745';
+      customPopup.style.backgroundColor = '#1e3d22';
+    } else if(type === 'error'){
+      customPopup.style.borderColor = '#dc3545';
+      customPopup.style.backgroundColor = '#3d1e22';
+    } else {
+      customPopup.style.borderColor = 'var(--primary-color)';
+      customPopup.style.backgroundColor = 'var(--surface-color)';
+    }
+    popupTimeoutId = setTimeout(hidePopup, 3000);
+  }
+  
+  // Hide popup
+  function hidePopup() {
+    customPopup.style.opacity = '0';
+    customPopup.style.pointerEvents = 'none';
+    customPopup.style.transform = 'translateX(-50%) translateY(100%)';
+  }
+  
+  popupCloseBtn.addEventListener('click', hidePopup);
+
+  // Load articles from localStorage
+  function loadArticles() {
+    const saved = localStorage.getItem('articles');
+    if (saved) {
+      articles = JSON.parse(saved);
+    } else {
+      articles = [];
+    }
+  }
+  
+  // Save articles to localStorage
+  function saveArticles() {
+    localStorage.setItem('articles', JSON.stringify(articles));
+  }
+  
+  // Render articles list previews
+  function renderArticles() {
+    articlesList.innerHTML = '';
+    if (articles.length === 0) {
+      noArticlesMsg.style.display = 'block';
+      noArticlesPepe.style.display = 'block';
+      return;
+    }
+    noArticlesMsg.style.display = 'none';
+    noArticlesPepe.style.display = 'none';
+    articles.forEach((article, index) => {
+      const div = document.createElement('div');
+      div.className = 'article-preview';
+      div.setAttribute('tabindex', '0');
+      div.setAttribute('role', 'button');
+
+      const fullName = certifiedUsers[article.username]?.fullName || article.username;
+      div.setAttribute('aria-label', `Open article titled ${article.title} by ${fullName}`);
+      div.dataset.index = index;
+
+      const img = document.createElement('img');
+      img.className = 'article-img';
+      img.src = article.imageData;
+      img.alt = 'Article image';
+
+      const title = document.createElement('h3');
+      title.className = 'article-title';
+      title.textContent = article.title;
+
+      const author = document.createElement('div');
+      author.className = 'article-author';
+      author.textContent = `Autor: ${fullName}`;
+
+      div.appendChild(img);
+      div.appendChild(title);
+      div.appendChild(author);
+
+      if (username === article.username) {
+        const removeBtn = document.createElement('button');
+        removeBtn.className = 'article-remove-btn';
+        removeBtn.setAttribute('aria-label', `Remove article titled ${article.title}`);
+        removeBtn.textContent = 'X';
+        removeBtn.addEventListener('click', (e) => {
+          e.stopPropagation();
+          if (confirm(`Are you sure you want to remove the article "${article.title}"?`)) {
+            removeArticle(index);
+          }
+        });
+        div.appendChild(removeBtn);
+      }
+
+      div.addEventListener('click', () => openArticleDetail(index));
+      div.addEventListener('keypress', (e) => {
+        if (e.key === 'Enter' || e.key === ' ') {
+          e.preventDefault();
+          openArticleDetail(index);
+        }
+      });
+
+      articlesList.appendChild(div);
+    });
+  }
+
+  // Remove article by index
+  function removeArticle(index) {
+    if (index < 0 || index >= articles.length) return;
+    articles.splice(index, 1);
+    saveArticles();
+    renderArticles();
+    showPopup('Article removed successfully.', 'success');
+    if (articleDetail.style.display === 'block') {
+      articleDetail.style.display = 'none';
+      articlesList.parentElement.style.display = 'block';
+      updateUIForUser ();
+    }
+  }
+
+  // Open article detail section
+  function openArticleDetail(index) {
+    const article = articles[index];
+    if (!article) return;
+
+    const fullName = certifiedUsers[article.username]?.fullName || article.username;
+    detailImage.src = article.imageData;
+    detailImage.alt = `Image for article titled ${article.title}`;
+    detailTitle.textContent = article.title;
+    detailAuthor.textContent = `Autor: ${fullName}`;
+    detailText.textContent = article.text;
+
+    articleDetail.style.display = 'block';
+    articlesList.parentElement.style.display = 'none';
+    articleFormSection.style.display = 'none';
+    loginStatus.textContent = '';
+  }
+
+  // Close article detail
+  closeArticleDetail.addEventListener('click', () => {
+    articleDetail.style.display = 'none';
+    articlesList.parentElement.style.display = 'block';
+    updateUIForUser ();
+  });
+
+  // Show or hide article posting form depending on login status
+  function updateUIForUser () {
+    if (username) {
+      articleFormSection.style.display = 'block';
+      btnLogin.style.display = 'none';
+      btnLogout.style.display = 'inline-block';
+      loginStatus.textContent = `Logged in as ${certifiedUsers[username]?.fullName || username}`;
+    } else {
+      articleFormSection.style.display = 'none';
+      btnLogin.style.display = 'inline-block';
+      btnLogout.style.display = 'none';
+      loginStatus.textContent = `Guest viewing`;
+    }
+    renderArticles();
+  }
+
+  // Open home (articles list) from logo/title click
+  goHomeBtn.addEventListener('click', () => {
+    articleDetail.style.display = 'none';
+    articlesList.parentElement.style.display = 'block';
+    updateUIForUser ();
+  });
+
+  // Login modal controls
+  btnLogin.addEventListener('click', () => {
+    loginModal.style.display = 'flex';
+    document.getElementById('username').focus();
+  });
+  
+  btnCancelLogin.addEventListener('click', () => {
+    loginModal.style.display = 'none';
+    loginForm.reset();
+  });
+  
+  btnLogout.addEventListener('click', () => {
+    username = null;
+    updateUIForUser ();
+    showPopup('Logged out successfully.', 'success');
+  });
+  
+  window.addEventListener('keydown', (e) => {
+    if (e.key === 'Escape' && loginModal.style.display === 'flex') {
+      loginModal.style.display = 'none';
+      loginForm.reset();
+    }
+  });
+
+  // Handle login form submit
+  loginForm.addEventListener('submit', (e) => {
+    e.preventDefault();
+    const inputUsername = loginForm.username.value.trim();
+    const password = loginForm.password.value.trim();
+
+    if (certifiedUsers[inputUsername] && certifiedUsers[inputUsername].password === password) {
+      username = inputUsername;
+      updateUIForUser ();
+      loginModal.style.display = 'none';
+      loginForm.reset();
+      showPopup(`Login successful! Certified user: ${certifiedUsers[inputUsername].fullName}`, 'success');
+    } else {
+      showPopup('Invalid username or password', 'error');
+    }
+  });
+
+  // Handle article post form submission
+  postArticleForm.addEventListener('submit', (e) => {
+    e.preventDefault();
+    if (!username) {
+      showPopup('You must be logged in as a certified user to post articles.', 'error');
+      return;
+    }
+    const title = postArticleForm.articleTitle.value.trim();
+    const text = postArticleForm.articleText.value.trim();
+    const imageFile = postArticleForm.articleImage.files[0];
+    if (!title || !text || !imageFile) {
+      showPopup('Please fill all fields and select an image.', 'error');
+      return;
+    }
+
+    const reader = new FileReader();
+    reader.onload = function(event) {
+      const imageData = event.target.result;
+      const newArticle = {
+        title,
+        text,
+        imageData,
+        username,
+        id: Date.now()
+      };
+      articles.unshift(newArticle);
+      saveArticles();
+      renderArticles();
+      postArticleForm.reset();
+      showPopup('Article published successfully!', 'success');
+    };
+    reader.readAsDataURL(imageFile);
+  });
+
+  // Initialization
+  function init() {
+    loadArticles();
+    renderArticles();
+    updateUIForUser ();
+  }
+  window.onload = init;
+
+</script>
+</body>
+</html> 

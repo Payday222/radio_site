@@ -269,6 +269,71 @@
       grid-template-columns: 1fr;
     }
   }
+ .modal {
+    background-color: var(--surface-color);
+    border-radius: var(--border-radius);
+    padding: 2rem;
+    max-width: 400px;
+    width: 90%;
+    box-shadow: 0 8px 30px rgb(0 0 0 / 0.8);
+  }
+   .modal h3 {
+    margin-top: 0;
+    margin-bottom: 1rem;
+    color: var(--primary-color);
+    font-weight: 700;
+    font-size: 1.4rem;
+  }
+  .modal label {
+    display: block;
+    margin-bottom: 0.4rem;
+    font-weight: 600;
+    color: var(--text-muted);
+  }
+  .modal input[type="text"], .modal input[type="password"] {
+    width: 100%;
+    padding: 0.5rem 0.75rem;
+    margin-bottom: 1rem;
+    border-radius: var(--border-radius);
+    border: 1px solid var(--input-border);
+    background-color: var(--input-bg);
+    color: var(--text-color);
+    font-size: 1rem;
+    font-family: var(--font-family);
+  }
+  .modal .modal-actions {
+    display: flex;
+    justify-content: flex-end;
+    gap: 1rem;
+  }
+  .modal .btn-cancel {
+    background: none;
+    border: 1px solid var(--text-muted);
+    color: var(--text-muted);
+    padding: 0.5rem 1rem;
+    border-radius: var(--border-radius);
+    cursor: pointer;
+    font-weight: 600;
+    transition: background-color 0.3s ease, color 0.3s ease;
+  }
+  .modal .btn-cancel:hover {
+    background-color: var(--text-muted);
+    color: var(--surface-color);
+  }
+  .modal .btn-submit {
+    background-color: var(--button-bg);
+    border: none;
+    color: white;
+    padding: 0.6rem 1.3rem;
+    border-radius: var(--border-radius);
+    font-weight: 700;
+    cursor: pointer;
+    transition: background-color 0.3s ease;
+  }
+  .modal .btn-submit:hover {
+    background-color: var(--button-hover-bg);
+  }
+  
 </style>
 </head>
 <body>
@@ -297,11 +362,11 @@
     </form>
   </section>
 
-  <section aria-label="Articles list">
+  <section aria-label="Articles list">  
     <h2 class="section-title">Artykuły</h2>
     <div class="articles-list" id="articlesList" tabindex="0" aria-live="polite" aria-relevant="additions removals"></div>
     <p id="noArticlesMsg" class="no-articles-msg" style="display:none;">Nie ma jeszcze żadnych artykułow - sadge.</p>
-    <img id="noArticlesPepe" class="no-articles-msg" style="display:none;" src="images/pepe.png" />
+    <img id="noArticlesPepe" class="no-articles-msg" style="display:none;" src="images\pepe.png" />
   </section>
 
   <section id="articleDetail" class="article-detail" style="display:none;" tabindex="0" aria-label="Article detail view">
@@ -342,7 +407,7 @@
   let username = null;
   let articles = [];
   const certifiedUsers = {
-    'mkaliszuk': {password: 'asd', fullName: 'Michał Kaliszuk'},
+    'mkaliszuk': {password: 'tetolover78*', fullName: 'Michał Kaliszuk'},
     'rchibowski': { password: 'Pierdolec3.141592', fullName: 'Remi Chibowski' },
     'zdudzinska': { password: 'tetolover', fullName: 'Zuza Dudzińska' },
     'mpastuszak': { password: 'tetolover13', fullName: 'Misia Pastuszak' },

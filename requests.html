@@ -1,0 +1,709 @@
+<!DOCTYPE html>
+<html lang="pl">
+<head>
+<meta charset="UTF-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1" />
+<title>Kup Piosenkę - Radio Pader</title>
+<style>
+  :root {
+    --primary-color: #0454a4;
+    --bg-color: #121212;
+    --surface-color: #1e1e1e;
+    --text-color: #e0e0e0;
+    --text-muted: #a0a0a0;
+    --button-bg: var(--primary-color);
+    --button-hover-bg: #03396c;
+    --input-bg: #2a2a2a;
+    --input-border: #555;
+    --max-width: 900px;
+    --border-radius: 6px;
+    --font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+  }
+  * {
+    box-sizing: border-box;
+  }
+  body {
+    margin: 0;
+    background-color: var(--bg-color);
+    color: var(--text-color);
+    font-family: var(--font-family);
+    min-height: 100vh;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+  }
+  header {
+    background-color: var(--surface-color);
+    width: 100%;
+    padding: 1rem 1.5rem;
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    border-bottom: 1px solid #222;
+  }
+  .logo-container {
+    display: flex;
+    align-items: center;
+    gap: 0.75rem;
+  }
+  .logo-container img {
+    height: 36px;
+    width: 36px;
+    object-fit: contain;
+  }
+  header h1 {
+    margin: 0;
+    font-weight: 700;
+    color: var(--primary-color);
+    font-size: 1.5rem;
+    user-select: none;
+    cursor: default;
+  }
+  nav {
+    display: flex;
+    align-items: center;
+    gap: 1rem;
+  }
+  nav button {
+    background-color: var(--button-bg);
+    border: none;
+    color: white;
+    padding: 0.5rem 1.1rem;
+    border-radius: var(--border-radius);
+    font-weight: 700;
+    cursor: pointer;
+    transition: background-color 0.3s ease;
+  }
+  nav button:hover {
+    background-color: var(--button-hover-bg);
+  }
+  main {
+    flex-grow: 1;
+    width: 100%;
+    max-width: var(--max-width);
+    padding: 2rem 1rem;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+  }
+  h2.section-title {
+    color: var(--primary-color);
+    font-weight: 700;
+    margin-bottom: 1.5rem;
+    text-align: center;
+  }
+  /* Form styles */
+  form.ticket-form {
+    background-color: var(--surface-color);
+    padding: 1.5rem;
+    border-radius: var(--border-radius);
+    box-shadow: 0 4px 12px rgb(4 84 164 / 0.6);
+    max-width: 500px;
+    width: 100%;
+    display: flex;
+    flex-direction: column;
+    gap: 1rem;
+  }
+  form.ticket-form label {
+    color: var(--text-muted);
+    font-weight: 600;
+  }
+  form.ticket-form select,
+  form.ticket-form input[type="text"],
+  form.ticket-form textarea {
+    width: 100%;
+    padding: 0.5rem 0.75rem;
+    border-radius: var(--border-radius);
+    border: 1px solid var(--input-border);
+    background-color: var(--input-bg);
+    color: var(--text-color);
+    font-family: var(--font-family);
+    font-size: 1rem;
+    resize: vertical;
+  }
+  form.ticket-form textarea {
+    min-height: 100px;
+  }
+  form.ticket-form button {
+    align-self: center;
+    background-color: var(--button-bg);
+    border: none;
+    color: white;
+    padding: 0.75rem 1.5rem;
+    border-radius: var(--border-radius);
+    font-weight: 700;
+    cursor: pointer;
+    transition: background-color 0.3s ease;
+  }
+  form.ticket-form button:hover {
+    background-color: var(--button-hover-bg);
+  }
+  /* Tickets list */
+  .tickets-list {
+    width: 100%;
+    max-width: 800px;
+  }
+  .ticket-item {
+    background-color: var(--surface-color);
+    border-radius: var(--border-radius);
+    padding: 1rem 1.5rem;
+    margin-bottom: 1rem;
+    display: flex;
+    flex-wrap: wrap;
+    align-items: center;
+    justify-content: space-between;
+    box-shadow: 0 4px 12px rgb(4 84 164 / 0.6);
+  }
+  .ticket-info {
+    flex: 1 1 300px;
+    color: var(--text-color);
+  }
+  .ticket-info > div {
+    margin-bottom: 0.2rem;
+  }
+  .ticket-actions {
+    display: flex;
+    align-items: center;
+    gap: 1rem;
+  }
+  .ticket-actions label {
+    display: flex;
+    align-items: center;
+    gap: 0.3rem;
+    font-weight: 600;
+    user-select: none;
+    cursor: pointer;
+  }
+  .ticket-actions input[type="checkbox"] {
+    width: 16px;
+    height: 16px;
+    cursor: pointer;
+  }
+  button.remove-ticket-btn {
+    background-color: #dc3545;
+    border: none;
+    padding: 0.35rem 0.7rem;
+    border-radius: var(--border-radius);
+    color: white;
+    font-weight: 700;
+    cursor: pointer;
+    transition: background-color 0.3s ease;
+  }
+  button.remove-ticket-btn:hover {
+    background-color: #a82a2a;
+  }
+  /* Login and logout UI */
+  #loginStatus {
+    color: var(--text-muted);
+    font-weight: 600;
+  }
+  #btn-logout {
+    background: none;
+    border: 1px solid var(--button-bg);
+    color: var(--button-bg);
+    padding: 0.3rem 0.7rem;
+    border-radius: var(--border-radius);
+    font-weight: 700;
+    cursor: pointer;
+    transition: background-color 0.3s ease, color 0.3s ease;
+  }
+  #btn-logout:hover {
+    background-color: var(--button-bg);
+    color: white;
+  }
+  /* Login modal */
+  .modal-overlay {
+    position: fixed;
+    inset: 0;
+    background: rgba(0,0,0,0.85);
+    display: none; /* hidden by default */
+    justify-content: center;
+    align-items: center;
+    z-index: 1000;
+  }
+  .modal-overlay.active {
+    display: flex;
+  }
+  .modal {
+    background-color: var(--surface-color);
+    border-radius: var(--border-radius);
+    padding: 2rem;
+    max-width: 400px;
+    width: 90%;
+    box-shadow: 0 8px 30px rgba(0,0,0,0.8);
+  }
+  .modal h3 {
+    margin-top: 0;
+    margin-bottom: 1rem;
+    color: var(--primary-color);
+    font-weight: 700;
+    font-size: 1.4rem;
+  }
+  .modal label {
+    display: block;
+    margin-bottom: 0.4rem;
+    font-weight: 600;
+    color: var(--text-muted);
+  }
+  .modal input[type="text"],
+  .modal input[type="password"] {
+    width: 100%;
+    padding: 0.5rem 0.75rem;
+    margin-bottom: 1rem;
+    border-radius: var(--border-radius);
+    border: 1px solid var(--input-border);
+    background-color: var(--input-bg);
+    color: var(--text-color);
+    font-size: 1rem;
+    font-family: var(--font-family);
+  }
+  .modal .modal-actions {
+    display: flex;
+    justify-content: flex-end;
+    gap: 1rem;
+  }
+  .modal .btn-cancel {
+    background: none;
+    border: 1px solid var(--text-muted);
+    color: var(--text-muted);
+    padding: 0.5rem 1rem;
+    border-radius: var(--border-radius);
+    cursor: pointer;
+    font-weight: 600;
+    transition: background-color 0.3s ease, color 0.3s ease;
+  }
+  .modal .btn-cancel:hover {
+    background-color: var(--text-muted);
+    color: var(--surface-color);
+  }
+  .modal .btn-submit {
+    background-color: var(--button-bg);
+    border: none;
+    color: white;
+    padding: 0.6rem 1.3rem;
+    border-radius: var(--border-radius);
+    font-weight: 700;
+    cursor: pointer;
+    transition: background-color 0.3s ease;
+  }
+  .modal .btn-submit:hover {
+    background-color: var(--button-hover-bg);
+  }
+  /* Custom Popup */
+  #customPopup {
+    position: fixed;
+    bottom: 1.5rem;
+    left: 50%;
+    transform: translateX(-50%) translateY(100%);
+    background-color: var(--surface-color);
+    color: var(--text-color);
+    border: 1px solid var(--primary-color);
+    border-radius: var(--border-radius);
+    box-shadow: 0 4px 15px rgba(4, 84, 164, 0.7);
+    padding: 1rem 1.5rem;
+    min-width: 260px;
+    font-weight: 600;
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    gap: 1rem;
+    opacity: 0;
+    pointer-events: none;
+    transition: opacity 0.3s ease, transform 0.3s ease;
+    z-index: 1500;
+  }
+  #customPopup.show {
+    opacity: 1;
+    pointer-events: auto;
+    transform: translateX(-50%) translateY(0);
+  }
+  #customPopup.success {
+    border-color: #28a745;
+    background-color: #1e3d22;
+  }
+  #customPopup.error {
+    border-color: #dc3545;
+    background-color: #3d1e22;
+  }
+  #customPopup button.close-popup {
+    background: none;
+    border: none;
+    color: var(--text-color);
+    font-size: 1.2rem;
+    font-weight: 700;
+    cursor: pointer;
+    padding: 0;
+    margin: 0;
+    line-height: 1;
+    user-select: none;
+    transition: color 0.2s ease;
+  }
+  #customPopup button.close-popup:hover {
+    color: var(--primary-color);
+  }
+  /* Responsive */
+  @media (max-width: 480px) {
+    form.ticket-form {
+      padding: 1rem;
+    }
+    .ticket-item {
+      flex-direction: column;
+      gap: 0.5rem;
+    }
+    .ticket-actions {
+      width: 100%;
+      justify-content: flex-start;
+      gap: 0.5rem;
+    }
+  }
+  /* Pricing section */
+  #pricingSection {
+    max-width: 500px;
+    background-color: var(--surface-color);
+    color: var(--text-muted);
+    border-radius: var(--border-radius);
+    padding: 1rem 1.5rem;
+    margin-top: 2rem;
+    text-align: center;
+    box-shadow: 0 4px 12px rgb(4 84 164 / 0.6);
+  }
+  #pricingSection h3 {
+    color: var(--primary-color);
+    margin-bottom: 0.7rem;
+  }
+  #pricingSection ul {
+    list-style: none;
+    padding: 0;
+    margin: 0;
+    font-weight: 600;
+  }
+  #pricingSection ul li {
+    padding: 0.3rem 0;
+  }
+</style>
+</head>
+<body>
+<header>
+  <div class="logo-container" aria-label="Logo">
+    <a href="index.html"><img src="images/paderlogo.png" alt="Website Logo" /></a>
+    <h1>Kup Piosenkę</h1>
+  </div>
+  <nav aria-label="User  actions">
+    <span id="loginStatus" aria-live="polite"></span>
+    <button id="btn-login" title="Certified User Login">Logowanie dla radiowców</button>
+    <button id="btn-logout" title="Logout" style="display:none;">Logout</button>
+  </nav>
+</header>
+<main>
+  <!-- Ticket submission form for guests -->
+  <form id="ticketForm" class="ticket-form" aria-label="Submit a ticket" style="display:none;">
+    <label for="ticketType">Wybierz rodzaj zgłoszenia</label>
+    <select id="ticketType" name="ticketType" required>
+      <option value="" disabled selected>-- Wybierz opcję --</option>
+      <option value="piosenka">Piosenka - 1zł</option>
+      <option value="ogloszenie">Ogłoszenie - 2zł</option>
+      <option value="piosenka_dedykacja">Piosenka z dedykacją - 4zł</option>
+    </select>
+
+    <label for="songTitle">Tytuł piosenki</label>
+    <input type="text" id="songTitle" name="songTitle" required autocomplete="off" />
+    
+    <label for="dateBreak">Data, przerwa</label>
+    <input type="text" id="dateBreak" name="dateBreak" required autocomplete="off" placeholder="np. 12.05.2024, śniadaniowa/obiadowa" />
+    
+    <label for="personName">Imię i Nazwisko</label>
+    <input type="text" id="personName" name="personName" required autocomplete="off" />
+    
+    <label for="class">Klasa</label>
+    <input type="text" id="class" name="class" required autocomplete="off" />
+    
+    <button type="submit" style="margin-top: 10px;">Wyślij zgłoszenie</button>
+  </form>
+
+  <!-- Tickets list for certified users -->
+  <section id="ticketsSection" style="display:none; width: 100%; max-width: 900px;">
+    <h2 class="section-title">Ticket Requests</h2>
+    <div id="ticketsList" aria-live="polite"></div>
+  </section>
+
+  <!-- Information section -->
+  <section id="infoSection">
+    <h2 style="color: var(--primary-color); text-align:center; margin-bottom: 0.5rem;">O co chodzi?</h2>
+    <p style="color: var(--text-muted); text-align:center; max-width: 600px; margin: 0 auto;">
+      Masz możliwość wpłacenia u nas określoną kwotę, aby podczas przerwy została zagrana przez nas piosenka lub przekazane ogłoszenie wybrane przez Ciebie.
+      Wypełnij formularz zgłoszenia, a my zadbamy o resztę!</p>
+      <p style="color: var(--primary-color);">Pieniądze można przekazać gotówką do zespołu radiowego, lub BLIK'iem na numer: xxx xxx xxx</p>
+      <p></p>
+    <p style="color: var(--text-muted); text-align:center; max-width: 600px; margin: 0 auto;">Piosenka/ogłoszenie nie może zawierać niestosownych treści. W takim wypadku zgłoszenie zostanie odrzucone bez możliwości zwrotu kosztów.</p>
+   
+  </section>
+
+  
+</main>
+
+<!-- Login modal -->
+<div id="loginModal" class="modal-overlay" role="dialog" aria-modal="true" aria-labelledby="loginTitle" aria-describedby="loginDesc" tabindex="-1" >
+  <div class="modal">
+    <h3 id="loginTitle">Certified User Login</h3>
+    <p id="loginDesc" style="color:var(--text-muted);margin-top:0;margin-bottom:1.5rem;">Enter your credentials to access certified user features.</p>
+    <form id="loginForm" autocomplete="off" novalidate>
+      <label for="username">Username</label>
+      <input type="text" id="username" name="username" required autocomplete="off" />
+      <label for="password">Password</label>
+      <input type="password" id="password" name="password" required autocomplete="off" />
+      <div class="modal-actions">
+        <button type="button" class="btn-cancel" id="btnCancelLogin">Cancel</button>
+        <button type="submit" class="btn-submit">Login</button>
+      </div>
+    </form>
+  </div>
+</div>
+
+<!-- Custom Popup for messages -->
+<div id="customPopup" role="alert" aria-live="assertive" aria-atomic="true" style="position: fixed; bottom: 1.5rem; left: 50%; transform: translateX(-50%) translateY(100%); background-color: var(--surface-color); color: var(--text-color); border: 1px solid var(--primary-color); border-radius: var(--border-radius); box-shadow: 0 4px 15px rgba(4, 84, 164, 0.7); padding: 1rem 1.5rem; min-width: 260px; font-weight: 600; display: flex; align-items: center; justify-content: space-between; gap: 1rem; opacity: 0; pointer-events: none; transition: opacity 0.3s ease, transform 0.3s ease; z-index: 1500;">
+  <span id="popupMessage"></span>
+  <button class="close-popup" aria-label="Close" style="background:none;border:none;color:var(--text-color);font-size:1.2rem;font-weight:700;cursor:pointer;padding:0;margin:0;line-height:1;user-select:none;transition:color 0.2s ease;">&times;</button>
+</div>
+
+<script>
+  // Variables
+  let username = null;
+  const certifiedUsers = {
+    'mkaliszuk': {password: 'asd', fullName: 'Michał Kaliszuk'},
+    'rchibowski': {password: 'Pierdolec3.141592', fullName: 'Remi Chibowski'},
+    'zdudzinska': {password: 'tetolover', fullName: 'Zuza Dudzińska'},
+    'mpastuszak': {password: 'tetolover13', fullName: 'Misia Pastuszak'},
+    'lchroscik': {password: '', fullName: 'Lena Chrościk'},
+    'mgagos': {password: 'Jaskier2020', fullName: 'Magdalena Gagoś'},
+    'mzielinski': {password: 'Sigmaboi2137', fullName: 'Mateusz Zieliński'},
+    'hbusz': {password: '', fullName: 'Hanna Busz'},
+  };
+
+  let tickets = [];
+
+  // DOM elements
+  const btnLogin = document.getElementById('btn-login');
+  const btnLogout = document.getElementById('btn-logout');
+  const loginModal = document.getElementById('loginModal');
+  const btnCancelLogin = document.getElementById('btnCancelLogin');
+  const loginForm = document.getElementById('loginForm');
+  const loginStatus = document.getElementById('loginStatus');
+  const ticketForm = document.getElementById('ticketForm');
+  const ticketsSection = document.getElementById('ticketsSection');
+  const ticketsList = document.getElementById('ticketsList');
+  const popup = document.getElementById('customPopup');
+  const popupMessage = document.getElementById('popupMessage');
+  const popupCloseBtn = popup.querySelector('.close-popup');
+
+  // Show popup helper
+  function showPopup(message, type = 'success') {
+    popupMessage.textContent = message;
+    popup.className = 'show';
+    popup.classList.remove('success', 'error');
+    if(type === 'success') {
+      popup.classList.add('success');
+    } else if(type === 'error') {
+      popup.classList.add('error');
+    }
+    popup.style.opacity = '1';
+    popup.style.pointerEvents = 'auto';
+    popup.style.transform = 'translateX(-50%) translateY(0)';
+    clearTimeout(popup.hideTimeout);
+    popup.hideTimeout = setTimeout(() => {
+      popup.style.opacity = '0';
+      popup.style.pointerEvents = 'none';
+      popup.style.transform = 'translateX(-50%) translateY(100%)';
+    }, 3000);
+  }
+  popupCloseBtn.addEventListener('click', () => {
+    popup.style.opacity = '0';
+    popup.style.pointerEvents = 'none';
+    popup.style.transform = 'translateX(-50%) translateY(100%)';
+    clearTimeout(popup.hideTimeout);
+  });
+
+  // Load tickets from localStorage
+  function loadTickets() {
+    const stored = localStorage.getItem('tickets');
+    if(stored){
+      tickets = JSON.parse(stored);
+    } else {
+      tickets = [];
+    }
+  }
+  // Save tickets to localStorage
+  function saveTickets() {
+    localStorage.setItem('tickets', JSON.stringify(tickets));
+  }
+
+  // Render tickets list for certified user
+  function renderTickets() {
+    ticketsList.innerHTML = '';
+    if(tickets.length === 0){
+      ticketsList.textContent = 'Brak zgłoszeń.';
+      return;
+    }
+    tickets.forEach((ticket, idx) => {
+      const item = document.createElement('div');
+      item.className = 'ticket-item';
+
+      const info = document.createElement('div');
+      info.className = 'ticket-info';
+      info.innerHTML = `
+        <div><strong>Rodzaj zgłoszenia:</strong> ${ticket.ticketType === 'piosenka' ? 'Piosenka' : ticket.ticketType === 'ogloszenie' ? 'Ogłoszenie' : 'Piosenka z dedykacją'}</div>
+        <div><strong>Tytuł piosenki / treść:</strong> ${ticket.songTitle}</div>
+        <div><strong>Data, przerwa:</strong> ${ticket.dateBreak}</div>
+        <div><strong>Imię i Nazwisko:</strong> ${ticket.personName}</div>
+        <div><strong>Klasa:</strong> ${ticket.className}</div>
+        <div><strong>Status:</strong> ${ticket.paid ? 'Opłacone' : 'Nieopłacone'}</div>
+      `;
+
+      const actions = document.createElement('div');
+      actions.className = 'ticket-actions';
+
+      // Paid checkbox
+      const labelPaid = document.createElement('label');
+      labelPaid.for = `paid-${idx}`;
+      labelPaid.textContent = 'Opłacone';
+      const checkbox = document.createElement('input');
+      checkbox.type = 'checkbox';
+      checkbox.id = `paid-${idx}`;
+      checkbox.checked = ticket.paid;
+      checkbox.addEventListener('change', () => {
+        tickets[idx].paid = checkbox.checked;
+        saveTickets();
+        showPopup(`Status opłacenia zgłoszenia "${ticket.songTitle}" został zmieniony.`);
+        renderTickets();
+      });
+      labelPaid.prepend(checkbox);
+
+      // Remove button
+      const removeBtn = document.createElement('button');
+      removeBtn.className = 'remove-ticket-btn';
+      removeBtn.textContent = 'Usuń';
+      removeBtn.title = `Usuń zgłoszenie "${ticket.songTitle}"`;
+      removeBtn.addEventListener('click', () => {
+        if(confirm(`Czy na pewno chcesz usunąć zgłoszenie "${ticket.songTitle}"?`)){
+          tickets.splice(idx, 1);
+          saveTickets();
+          showPopup(`Zgłoszenie "${ticket.songTitle}" usunięte.`);
+          renderTickets();
+        }
+      });
+
+      actions.appendChild(labelPaid);
+      actions.appendChild(removeBtn);
+
+      item.appendChild(info);
+      item.appendChild(actions);
+
+      ticketsList.appendChild(item);
+    });
+  }
+
+  // Update UI based on login status
+  function updateUI() {
+    const savedUser  = localStorage.getItem('loggedInUser ');
+    if(savedUser  && certifiedUsers[savedUser ]) {
+      username = savedUser ;
+    } else {
+      username = null;
+    }
+    if(username){
+      ticketForm.style.display = 'none';
+      ticketsSection.style.display = 'block';
+      btnLogin.style.display = 'none';
+      btnLogout.style.display = 'inline-block';
+      loginStatus.textContent = `Zalogowany jako: ${certifiedUsers[username]?.fullName || username}`;
+      renderTickets();
+    } else {
+      ticketForm.style.display = 'block';
+      ticketsSection.style.display = 'none';
+      btnLogin.style.display = 'inline-block';
+      btnLogout.style.display = 'none';
+      loginStatus.textContent = 'Niezalogowany użytkownik';
+    }
+  }
+
+  // Event handlers
+  btnLogin.addEventListener('click', () => {
+    loginModal.classList.add('active');
+  });
+
+  btnCancelLogin.addEventListener('click', () => {
+    loginModal.classList.remove('active');
+    loginForm.reset();
+  });
+
+  btnLogout.addEventListener('click', () => {
+    localStorage.removeItem('loggedInUser ');
+    username = null;
+    updateUI();
+    showPopup('Wylogowano pomyślnie.', 'success');
+  });
+
+  loginForm.addEventListener('submit', (e) => {
+    e.preventDefault();
+    const inputUsername = loginForm.username.value.trim();
+    const password = loginForm.password.value.trim();
+    if(certifiedUsers[inputUsername] && certifiedUsers[inputUsername].password === password){
+      username = inputUsername;
+      localStorage.setItem('loggedInUser ', username);
+      updateUI();
+      loginModal.classList.remove('active');
+      loginForm.reset();
+      showPopup(`Zalogowano jako: ${certifiedUsers[inputUsername].fullName}`, 'success');
+    } else {
+      showPopup('Nieprawidłowa nazwa użytkownika lub hasło.', 'error');
+    }
+  });
+
+  // Ticket form submission (guest)
+  ticketForm.addEventListener('submit', (e) => {
+    e.preventDefault();
+    const ticketType = document.getElementById('ticketType').value;
+    const songTitle = document.getElementById('songTitle').value.trim();
+    const dateBreak = document.getElementById('dateBreak').value.trim();
+    const personName = document.getElementById('personName').value.trim();
+    const className = document.getElementById('class').value.trim();
+    if(!ticketType){
+      showPopup('Proszę wybrać rodzaj zgłoszenia.', 'error');
+      return;
+    }
+    if(!songTitle || !dateBreak || !personName || !className){
+      showPopup('Proszę wypełnić wszystkie pola formularza.', 'error');
+      return;
+    }
+    const newTicket = {
+      ticketType,
+      songTitle,
+      dateBreak,
+      personName,
+      className,
+      paid: false,
+      id: Date.now()
+    };
+    tickets.push(newTicket);
+    saveTickets();
+    showPopup('Zgłoszenie zostało przesłane pomyślnie!', 'success');
+    ticketForm.reset();
+  });
+
+  // Accessibility: Close modal on ESC
+  window.addEventListener('keydown', (e) => {
+    if(e.key === 'Escape' && loginModal.classList.contains('active')){
+      loginModal.classList.remove('active');
+      loginForm.reset();
+    }
+  });
+
+  // Initialize
+  function init(){
+    loadTickets();
+    updateUI();
+  }
+
+  window.onload = init;
+</script>
+</body>
+</html>

@@ -1,5 +1,5 @@
 <!DOCTYPE html>
-<html lang="en">
+<html lang="pl">
 <head>
 <meta charset="UTF-8" />
 <meta name="viewport" content="width=device-width, initial-scale=1" />
@@ -293,7 +293,7 @@
     <h1>Radio Pader</h1>
   </div>
   <nav>
-    <button id="btn-login" class="btn-primary" title="Certified User Login">Certified Login</button>
+    <button id="btn-login" class="btn-primary" title="Certified User Login">Logowanie dla radiowców</button>
   </nav>
 </header>
 <main>
@@ -327,18 +327,33 @@
   </div>
 </div>
 
-<!-- Custom Popup for login messages -->
+<!-- Custom Popup for messages -->
 <div id="customPopup" role="alert" aria-live="assertive" aria-atomic="true" class="hidden">
   <span id="popupMessage"></span>
   <button class="close-popup" aria-label="Close">&times;</button>
 </div>
 
 <script>
-    document.getElementById('btn-articles').addEventListener('click', function() {
-    window.location.href = 'articles.html';
-});
+  // Variables
+  let username = null;
+  const certifiedUsers = {
+    'mkaliszuk': {password: 'asd', fullName: 'Michał Kaliszuk'},
+    'rchibowski': {password: 'Pierdolec3.141592', fullName: 'Remi Chibowski'},
+    'zdudzinska': {password: 'tetolover', fullName: 'Zuza Dudzińska'},
+    'mpastuszak': {password: 'tetolover13', fullName: 'Misia Pastuszak'},
+    'lchroscik': {password: '', fullName: 'Lena Chrościk'},
+    'mgagos': {password: 'Jaskier2020', fullName: 'Magdalena Gagoś'},
+    'mzielinski': {password: 'Sigmaboi2137', fullName: 'Mateusz Zieliński'},
+    'hbusz': {password: '', fullName: 'Hanna Busz'},
+  };
 
-  // Elements
+  // Check for saved user in localStorage
+  const savedUser  = localStorage.getItem('loggedInUser ');
+  if (savedUser  && certifiedUsers[savedUser ]) {
+    username = savedUser ;
+  }
+
+  // DOM elements
   const loginModal = document.getElementById('loginModal');
   const btnLogin = document.getElementById('btn-login');
   const btnCancelLogin = document.getElementById('btnCancelLogin');
@@ -349,34 +364,38 @@
   const popupMessage = document.getElementById('popupMessage');
   const popupCloseBtn = customPopup.querySelector('.close-popup');
 
-  let popupTimeoutId;
 
-  // Show custom popup message
+  btnArticles.addEventListener('click', () => {
+    window.location.href = "articles.html";
+  });
+
+  btnTickets.addEventListener('click', () => {
+    window.location.href = "requests.html";
+  });
+  // Show popup helper
   function showPopup(message, type = 'success') {
-    clearTimeout(popupTimeoutId);
     popupMessage.textContent = message;
-    customPopup.className = '';
-    customPopup.classList.add('show');
-    customPopup.classList.add(type);
-    // Auto hide after 3 seconds
+    customPopup.className = 'show';
+    customPopup.classList.remove('success', 'error');
+    if (type === 'success') {
+      customPopup.classList.add('success');
+    } else if (type === 'error') {
+      customPopup.classList.add('error');
+    }
+    customPopup.style.opacity = '1';
+    customPopup.style.pointerEvents = 'auto';
+    clearTimeout(popupTimeoutId);
     popupTimeoutId = setTimeout(hidePopup, 3000);
   }
+
   // Hide popup
   function hidePopup() {
-    customPopup.classList.remove('show');
-    customPopup.classList.remove('success');
-    customPopup.classList.remove('error');
+    customPopup.style.opacity = '0';
+    customPopup.style.pointerEvents = 'none';
   }
+
   // Close button click
   popupCloseBtn.addEventListener('click', hidePopup);
-
-  // Simulate navigation - these would link to other pages or load subsites dynamically
-  btnArticles.addEventListener('click', () => {
-    showPopup('Navigate to Artykuły Subsite (to be implemented)', 'success');
-  });
-  btnTickets.addEventListener('click', () => {
-    showPopup('Work in progress :"3', 'success');
-  });
 
   // Show login modal
   btnLogin.addEventListener('click', () => {
@@ -393,23 +412,12 @@
   // Handle form submission - simulate login only for certified users
   loginForm.addEventListener('submit', (e) => {
     e.preventDefault();
-    const username = loginForm.username.value.trim();
+    const inputUsername = loginForm.username.value.trim();
     const password = loginForm.password.value;
 
-    // Simulated certified users database
-    const certifiedUsers = {
-      'mkaliszuk' : 'asd',
-      'rchibowski' : 'Pierdolec3.141592',
-      'zdudzinska' : 'tetolover',
-      'mpastuszak' : 'tetolover13',
-      'lchroscik' : '',
-      'mgagos' : 'Jaskier2020',
-      'mzielinski' : '',
-      'hbusz' : '',
-
-    };
-
-    if (certifiedUsers[username] && certifiedUsers[username] === password) {
+    if (certifiedUsers[inputUsername] && certifiedUsers[inputUsername].password === password) {
+      username = inputUsername;
+      localStorage.setItem('loggedInUser ', username); // Save to localStorage
       showPopup('Login successful! Certified user: ' + username, 'success');
       loginModal.classList.remove('active');
       loginForm.reset();
@@ -426,9 +434,24 @@
       loginForm.reset();
     }
   });
+
+  
+  function init() {
+    
+    if (username) {
+      
+      btnLogin.style.display = 'none';
+      
+    } else {
+      
+      btnLogin.style.display = 'inline-block';
+    }
+  }
+
+  init();
 </script>
 <footer>
-  &copy; 2025 Radiowęzeł Paderewski
+  &copy; 2025 Radio Pader
 </footer>
 </body>
 </html>
